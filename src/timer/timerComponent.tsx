@@ -7,7 +7,7 @@ const TimerComponent = ({time, isTimeRunning}: Props) => {
   const containerStyle = isTimeRunning ? [styles.container, styles.runningTimeContainer] : styles.container;
   return (
     <View style={containerStyle}>
-      <Text style={styles.timerText}>timer: {time}</Text>
+      <Text style={styles.timerText}>{time}</Text>
     </View>
   );
 };
@@ -15,6 +15,9 @@ const TimerComponent = ({time, isTimeRunning}: Props) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    borderWidth: 1,
+    borderColor: 'rgba(0,0,0,0.3)',
+    margin: 5,
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: '#c2c2c2'

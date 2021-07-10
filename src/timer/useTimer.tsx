@@ -1,28 +1,7 @@
-import React, {MutableRefObject, useCallback, useEffect, useRef, useState} from 'react';
+import {MutableRefObject, useCallback, useEffect, useRef, useState} from 'react';
+import {getDeadlineDate, getRestOfTime} from './helpers';
 
-import TimerComponent from './timerComponent';
-
-type Props = {
-  timeMinutes: number;
-};
-
-const getRestOfTime = (endtime: Date): {text: string; ms: number} => {
-  const timeMs = Date.parse(endtime) - Date.parse(new Date());
-  const seconds = Math.floor((timeMs / 1000) % 60);
-  const minutes = Math.floor((timeMs / 1000 / 60) % 60);
-
-  const minutesText = minutes < 10 ? `0${minutes}` : `${minutes}`;
-  const secondsText = seconds < 10 ? `0${seconds}` : `${seconds}`;
-
-  return {text: `${minutesText}:${secondsText} `, ms: timeMs};
-};
-
-const getDeadlineDate = (timeMinutes: number): Date => {
-  const currentTime = Date.parse(new Date());
-  return new Date(currentTime + timeMinutes * 60 * 1000);
-};
-
-const TimerContainer = ({timeMinutes}: Props) => {
+const useTimer = (timeMinutes: number) => {
   let interval = useRef();
   let pausedRestOfTime: MutableRefObject<number> = useRef(0);
   let deadlineDate: MutableRefObject<Date> = useRef(null);
@@ -90,7 +69,7 @@ const TimerContainer = ({timeMinutes}: Props) => {
     }
   }, [isActive, resume, runClock, timeMinutes]);
 
-  return <TimerComponent time={timeText} isTimeRunning={isActive && !isPaused} />;
+  return {timeText, isTimeRunning: isActive && !isPaused, start, pause, reset};
 };
 
-export default TimerContainer;
+export default useTimer;
