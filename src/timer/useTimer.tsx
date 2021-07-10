@@ -69,7 +69,7 @@ const useTimer = (timeMinutes: number) => {
     }
   }, [isActive, resume, runClock, timeMinutes]);
 
-  return {timeText, isTimeRunning: isActive && !isPaused, start, pause, reset};
+  return {timeText, start, pause, reset};
 };
 
 export default useTimer;
