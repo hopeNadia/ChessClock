@@ -58,16 +58,16 @@ const styles = StyleSheet.create({
     flex: 1
   },
   controlsContainer: {
-    padding: 20
+    padding: 10
   },
   contentContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center',
-    marginVertical: 10
+    justifyContent: 'space-between',
+    marginVertical: 5
   },
   switchText: {
-    fontSize: 17,
+    fontSize: 13,
     color: 'rgba(0,0,0,0.5)'
   },
   timerText: {
