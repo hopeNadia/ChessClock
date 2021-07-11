@@ -8,7 +8,7 @@
     "start": "react-native start",
     "test": "jest",
     "lint": "eslint .",
-    "reinstall": "rm -rf node_modules && rm -rf ios/Pods && yarn install && cd ios && pod install && cd .."
+    "prepare": "yarn install && cd ios && pod install && cd .. && react-native start"
   
   },
   "dependencies": {
