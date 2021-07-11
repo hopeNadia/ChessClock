@@ -8,8 +8,9 @@
     "start": "react-native start",
     "test": "jest",
     "lint": "eslint .",
-    "prepare": "yarn install && cd ios && pod install && cd .. && react-native start"
-  
+    "prepare_project": "yarn install && cd ios && pod install && cd ..",
+    "run_project_ios": "yarn prepare_project && react-native run-ios",
+    "run_project_android": "yarn prepare_project && react-native run-android"
   },
   "dependencies": {
     "react": "17.0.1",
