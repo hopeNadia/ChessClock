@@ -1,10 +1,23 @@
 import React from 'react';
 import {View, StyleSheet, Text} from 'react-native';
 
-type Props = {time: string; isTimeRunning: boolean};
+type Props = {
+  time: string;
+  isTimeRunning: boolean;
+  isTimeOver: boolean;
+};
 
-const TimerComponent = ({time, isTimeRunning}: Props) => {
-  const containerStyle = isTimeRunning ? [styles.container, styles.runningTimeContainer] : styles.container;
+const TimerComponent = ({time, isTimeOver, isTimeRunning}: Props) => {
+  let containerStyle: any[] = [styles.container];
+
+  if (isTimeRunning) {
+    containerStyle.push(styles.runningTimeContainer);
+  }
+
+  if (isTimeOver) {
+    containerStyle.push(styles.overTimerContainer);
+  }
+
   return (
     <View style={containerStyle}>
       <Text style={styles.timerText}>{time}</Text>
@@ -24,6 +37,9 @@ const styles = StyleSheet.create({
   },
   runningTimeContainer: {
     backgroundColor: '#ffe9c2'
+  },
+  overTimerContainer: {
+    backgroundColor: 'red'
   },
   timerText: {
     color: 'black',

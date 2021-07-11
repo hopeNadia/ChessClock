@@ -71,7 +71,11 @@ const CheccClockContainer = () => {
       startDisabled={isStarted && !isPaused}
       switchDisabled={!isStarted}>
       {timers.map((timer, index) => (
-        <Timer time={timer.timeText} isTimeRunning={currentTimerIndex.current === index} />
+        <Timer
+          time={timer.timeText}
+          isTimeRunning={currentTimerIndex.current === index}
+          isTimeOver={timer.isTimeOver}
+        />
       ))}
     </CheccClockComponent>
   );

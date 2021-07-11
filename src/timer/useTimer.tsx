@@ -8,6 +8,7 @@ const useTimer = (timeMinutes: number) => {
 
   const [isPaused, setIsPaused] = useState<boolean>(false);
   const [isActive, setIsActive] = useState<boolean>(false);
+  const [isTimeOver, setIsTimeOver] = useState<boolean>(false);
   const [timeText, setTimeText] = useState<string>('');
 
   useEffect(() => {
@@ -23,6 +24,7 @@ const useTimer = (timeMinutes: number) => {
       setTimeText(time.text);
 
       if (time.ms <= 0) {
+        setIsTimeOver(true);
         setIsActive(false);
         clearInterval(interval.current);
       }
@@ -62,6 +64,7 @@ const useTimer = (timeMinutes: number) => {
     if (isActive) {
       resume();
     } else {
+      setIsTimeOver(false);
       setIsActive(true);
       deadlineDate.current = getDeadlineDate(timeMinutes);
 
@@ -69,7 +72,7 @@ const useTimer = (timeMinutes: number) => {
     }
   }, [isActive, resume, runClock, timeMinutes]);
 
-  return {timeText, start, pause, reset};
+  return {timeText, isTimeOver, start, pause, reset};
 };
 
 export default useTimer;
