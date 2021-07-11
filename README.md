@@ -1,6 +1,6 @@
 # ChessClock
 Chess clock
-To install packages: 
-yarn reinstall 
+To start app: yarn run_project_ios/ yarn run_project_android 
 or
-yarn install && cd ios && pod install
+yarn prepare_project && react-native start &&  yarn android/ yarn ios
+
