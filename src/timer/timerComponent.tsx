@@ -7,7 +7,7 @@ type Props = {
   isTimeOver: boolean;
 };
 
-const TimerComponent = ({time, isTimeOver, isTimeRunning}: Props) => {
+const TimerComponent = React.memo(({time, isTimeOver, isTimeRunning}: Props) => {
   let containerStyle: any[] = [styles.container];
 
   if (isTimeRunning) {
@@ -23,7 +23,7 @@ const TimerComponent = ({time, isTimeOver, isTimeRunning}: Props) => {
       <Text style={styles.timerText}>{time}</Text>
     </View>
   );
-};
+});
 
 const styles = StyleSheet.create({
   container: {

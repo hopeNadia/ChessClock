@@ -2,16 +2,19 @@ import React, {useState, useRef, useMemo, useCallback} from 'react';
 import CheccClockComponent from './chessClockComponent';
 
 import {Timer, useTimer} from '../timer';
+import {minutesToMs, msToMinutes} from '../services/timeHelpers';
+
+const defaultPlayTimeMs = 600000;
 
 const CheccClockContainer = () => {
   let currentTimerIndex = useRef<number>(0);
+
   const [isPaused, setIsPaused] = useState<boolean>(false);
   const [isStarted, setIsStarted] = useState<boolean>(false);
-  const [playMinutes, setPlayMinutes] = useState<number>(10);
+  const [playTimeMs, setPlayTimeMs] = useState<number>(defaultPlayTimeMs);
 
-  const timer1 = useTimer(playMinutes);
-  const timer2 = useTimer(playMinutes);
-
+  const timer1 = useTimer(playTimeMs);
+  const timer2 = useTimer(playTimeMs);
   const timers = useMemo(() => [timer1, timer2], [timer1, timer2]);
 
   const startClock = useCallback(() => {
@@ -25,7 +28,18 @@ const CheccClockContainer = () => {
     setIsPaused(false);
   }, [isPaused, isStarted, timers]);
 
-  const onChangeClock = useCallback(() => {
+  const pauseClock = useCallback(() => {
+    setIsPaused(true);
+    timers.forEach(timer => timer.pause());
+  }, [timers]);
+
+  const resetClock = useCallback(() => {
+    setIsStarted(false);
+    currentTimerIndex.current = 0;
+    timers.forEach(timer => timer.reset());
+  }, [timers]);
+
+  const changeClock = useCallback(() => {
     if (isStarted) {
       setIsPaused(false);
 
@@ -38,40 +52,29 @@ const CheccClockContainer = () => {
     }
   }, [isStarted, timers]);
 
-  const pauseClock = () => {
-    setIsPaused(true);
-    timers.forEach(timer => timer.pause());
-  };
-
-  const resetClock = useCallback(() => {
-    setIsStarted(false);
-    timers.forEach(timer => timer.reset());
-  }, [timers]);
-
   const onChangeTime = useCallback(
-    (text: string) => {
+    (numberValue: number) => {
       if (isStarted) {
         resetClock();
       }
-
-      const playMinutesNumber = text ? parseInt(text) : 0;
-      setPlayMinutes(playMinutesNumber);
+      setPlayTimeMs(minutesToMs(numberValue));
     },
     [isStarted, resetClock]
   );
 
   return (
     <CheccClockComponent
-      playMinutes={playMinutes}
-      changeTime={onChangeTime}
+      defaultTimeValue={msToMinutes(defaultPlayTimeMs)}
+      onChangeTime={onChangeTime}
       start={startClock}
       pause={pauseClock}
       reset={resetClock}
-      changeClock={onChangeClock}
+      changeClock={changeClock}
       startDisabled={isStarted && !isPaused}
       switchDisabled={!isStarted}>
       {timers.map((timer, index) => (
         <Timer
+          key={timer.id}
           time={timer.timeText}
           isTimeRunning={currentTimerIndex.current === index}
           isTimeOver={timer.isTimeOver}
