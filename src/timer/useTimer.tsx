@@ -1,10 +1,11 @@
-import {MutableRefObject, useCallback, useEffect, useRef, useState} from 'react';
-import {getDeadlineDate, getRestOfTime} from './helpers';
+import {MutableRefObject, useCallback, useEffect, useMemo, useRef, useState} from 'react';
+import {getDeadlineDate, getRestOfTime} from '../services/timeHelpers';
 
-const useTimer = (timeMinutes: number) => {
+const useTimer = (timeMs: number) => {
   let interval = useRef();
   let pausedRestOfTime: MutableRefObject<number> = useRef(0);
   let deadlineDate: MutableRefObject<Date> = useRef(null);
+  const id = useMemo(() => Math.random().toString(36).substr(2, 9), []);
 
   const [isPaused, setIsPaused] = useState<boolean>(false);
   const [isActive, setIsActive] = useState<boolean>(false);
@@ -12,14 +13,14 @@ const useTimer = (timeMinutes: number) => {
   const [timeText, setTimeText] = useState<string>('');
 
   useEffect(() => {
-    if (!isActive) {
-      const currentRemains = getRestOfTime(getDeadlineDate(timeMinutes));
-      setTimeText(currentRemains.text);
+    if (!isActive && !isTimeOver) {
+      const restOfTime = getRestOfTime(getDeadlineDate(timeMs));
+      setTimeText(restOfTime.text);
     }
-  }, [isActive, timeMinutes]);
+  }, [isActive, isTimeOver, timeMs]);
 
-  const runClock = useCallback((entTime: Date) => {
-    const updateClock = () => {
+  const runTimer = useCallback((entTime: Date) => {
+    const updateTimer = () => {
       var time = getRestOfTime(entTime);
       setTimeText(time.text);
 
@@ -29,9 +30,9 @@ const useTimer = (timeMinutes: number) => {
         clearInterval(interval.current);
       }
     };
-    updateClock();
+    updateTimer();
 
-    interval.current = setInterval(updateClock, 1000);
+    interval.current = setInterval(updateTimer, 1000);
   }, []);
 
   const resume = useCallback(() => {
@@ -40,25 +41,9 @@ const useTimer = (timeMinutes: number) => {
 
       deadlineDate.current = new Date(Date.parse(new Date()) + pausedRestOfTime.current);
 
-      runClock(deadlineDate.current);
+      runTimer(deadlineDate.current);
     }
-  }, [isPaused, runClock]);
-
-  const pause = useCallback(() => {
-    if (!isPaused) {
-      setIsPaused(true);
-      clearInterval(interval.current);
-      pausedRestOfTime.current = getRestOfTime(deadlineDate.current).ms;
-    }
-  }, [isPaused]);
-
-  const reset = useCallback(() => {
-    setIsActive(false);
-    setIsPaused(false);
-    clearInterval(interval.current);
-    deadlineDate.current = null;
-    pausedRestOfTime.current = 0;
-  }, []);
+  }, [isPaused, runTimer]);
 
   const start = useCallback(() => {
     if (isActive) {
@@ -66,13 +51,30 @@ const useTimer = (timeMinutes: number) => {
     } else {
       setIsTimeOver(false);
       setIsActive(true);
-      deadlineDate.current = getDeadlineDate(timeMinutes);
+      deadlineDate.current = getDeadlineDate(timeMs);
 
-      runClock(deadlineDate.current);
+      runTimer(deadlineDate.current);
     }
-  }, [isActive, resume, runClock, timeMinutes]);
+  }, [isActive, resume, runTimer, timeMs]);
 
-  return {timeText, isTimeOver, start, pause, reset};
+  const pause = useCallback(() => {
+    if (isActive && !isPaused) {
+      setIsPaused(true);
+      clearInterval(interval.current);
+      pausedRestOfTime.current = getRestOfTime(deadlineDate.current).ms;
+    }
+  }, [isActive, isPaused]);
+
+  const reset = useCallback(() => {
+    setIsActive(false);
+    setIsPaused(false);
+    setIsTimeOver(false);
+    clearInterval(interval.current);
+    deadlineDate.current = null;
+    pausedRestOfTime.current = 0;
+  }, []);
+
+  return {id, timeText, isTimeOver, start, pause, reset};
 };
 
 export default useTimer;
